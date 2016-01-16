@@ -60,7 +60,7 @@ def main() :
 
         with tinydb.TinyDB(gpu_db_path) as db :
             map(db.insert, gpus_stats)
-            
+
         time.sleep(_log_frequency_seconds)
 
 def get_datetime_string_now() :
@@ -127,7 +127,7 @@ def run_nvidia_smi() :
 def get_gpu_process_stats() :
     timestring = get_datetime_string_now()
     gpus_info, apps_info = run_nvidia_smi()
-    pcibus2gpuinfo = {info['pci.bus_id'] : info for info in gpus_info}
+    pcibus2gpuinfo = {info['gpu-pci.bus_id'] : info for info in gpus_info}
     stats_by_process = []
     for app_info in apps_info :
         gpu_info = pcibus2gpuinfo[app_info['gpu_bus_id']]
