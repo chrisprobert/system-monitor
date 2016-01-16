@@ -125,6 +125,7 @@ def run_nvidia_smi() :
         lambda l: {'gpu-{}'.format(k):v.strip() for k,v in zip(smi_gpu_fields, l.split(','))},
         output_gpu)
     apps_info = [{k:v.strip() for k,v in zip(smi_apps_fields, l.split(','))} for l in output_apps]
+    apps_info = filter(lambda d: len(d['gpu_bus_id']) and len(d['pid']), apps_info)
 
     return gpu_info, apps_info
 
