@@ -19,7 +19,7 @@ import tinydb
 '''
 
 _hostname = socket.gethostname()
-_log_frequency_seconds = 60
+_log_frequency_seconds = 120
 
 def main() :
 
@@ -75,16 +75,20 @@ def run_command_split_output(command) :
     return output
 
 def procinfo_from_pid(pid) :
-    p = psutil.Process(int(pid))
-    procinfo = {
-        'pid' : int(pid),
-        'system_memory_rss' : p.memory_info().rss,
-        'system_memory_vms' : p.memory_info().vms,
-        'user' : p.username(),
-        'name' : p.name(),
-        'exe' : p.exe(),
-        'args' : ' '.join(p.cmdline())
-    }
+    try :
+        p = psutil.Process(int(pid))
+        procinfo = {
+            'pid' : int(pid),
+            'system_memory_rss' : p.memory_info().rss,
+            'system_memory_vms' : p.memory_info().vms,
+            'user' : p.username(),
+            'name' : p.name(),
+            'exe' : p.exe(),
+            'args' : ' '.join(p.cmdline())
+        }
+    except :
+        procinfo = {'pid' : pid, 'system_memory_rss' : '', 'system_memory_vms' : '',
+            'user' : '', 'name' : '', 'exe' : '', 'args' : ''}
     return procinfo
 
 def run_nvidia_smi() :
@@ -131,11 +135,7 @@ def get_gpu_process_stats() :
     stats_by_process = []
     for app_info in apps_info :
         gpu_info = pcibus2gpuinfo[app_info['gpu_bus_id']]
-        try :
-            procinfo = procinfo_from_pid(app_info['pid'])
-        except :
-            print('Process not found: {}'.format(app_info['pid']))
-            procinfo = {}
+        procinfo = procinfo_from_pid(app_info['pid'])
         combined_stats = {k:v for d in [app_info, gpu_info, procinfo] for k,v in d.items()}
         combined_stats['timestamp'] = timestring
         combined_stats['hostname'] = _hostname
