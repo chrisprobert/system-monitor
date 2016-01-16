@@ -135,6 +135,7 @@ def get_gpu_process_stats() :
             procinfo = procinfo_from_pid(app_info['pid'])
         except :
             print('Process not found: {}'.format(app_info['pid']))
+            procinfo = {}
         combined_stats = {k:v for d in [app_info, gpu_info, procinfo] for k,v in d.items()}
         combined_stats['timestamp'] = timestring
         combined_stats['hostname'] = _hostname
