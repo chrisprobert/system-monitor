@@ -131,7 +131,10 @@ def get_gpu_process_stats() :
     stats_by_process = []
     for app_info in apps_info :
         gpu_info = pcibus2gpuinfo[app_info['gpu_bus_id']]
-        procinfo = procinfo_from_pid(app_info['pid'])
+        try :
+            procinfo = procinfo_from_pid(app_info['pid'])
+        except :
+            print('Process not found: {}'.format(app_info['pid']))
         combined_stats = {k:v for d in [app_info, gpu_info, procinfo] for k,v in d.items()}
         combined_stats['timestamp'] = timestring
         combined_stats['hostname'] = _hostname
