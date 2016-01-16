@@ -8,16 +8,18 @@ import inspect
 import os
 import socket
 import subprocess
+import time
 
 import psutil
 import tinydb
 
 
 '''
-    Simple utility to log system usage, focused on GPU applications.
+    Simple utility to log system usage stats, focused on GPU applications.
 '''
 
 _hostname = socket.gethostname()
+_log_frequency_seconds = 60
 
 def main() :
 
@@ -40,8 +42,15 @@ def main() :
     if valid_path :
         db_path = args.dbpath
 
-    db_fname = os.path.join(db_path, 'gpu-monitor-{}.db.json'.format(_hostname))
-    print('Starting monitor on {} using database {}'.format(_hostname, db_fname))
+    process_db_name = 'gpu-monitor-process-{}.db.json'.format(_hostname)
+    gpu_db_name = 'gpu-monitor-gpu-{}.db.json'.format(_hostname)
+    process_db_path = os.path.join(db_path, process_db_name)
+    gpu_db_path = os.path.join(db_path, gpu_db_name)
+
+    print('Starting monitor on {} using databases {}, {}'.format(
+        _hostname, process_db_name, gpu_db_name))
+
+
 
 def get_datetime_string_now() :
     now = datetime.datetime.now()
