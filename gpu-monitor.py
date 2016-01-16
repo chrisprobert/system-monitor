@@ -47,10 +47,21 @@ def main() :
     process_db_path = os.path.join(db_path, process_db_name)
     gpu_db_path = os.path.join(db_path, gpu_db_name)
 
-    print('Starting monitor on {} using databases {}, {}'.format(
-        _hostname, process_db_name, gpu_db_name))
+    print('Starting monitor on {}'.format(_hostname))
+    print('Process db: {}'.format(process_db_path))
+    print('GPU db: {}'.format(gpu_db_path))
+    print('Logging interval (seconds): {}'.format(_log_frequency_seconds))
 
+    while True :
+        gpus_stats, process_stats = get_gpu_process_stats()
 
+        with tinydb.TinyDB(process_db_path) as db :
+            map(db.insert, process_stats)
+
+        with tinydb.TinyDB(gpu_db_path) as db :
+            map(db.insert, gpus_stats)
+            
+        time.sleep(_log_frequency_seconds)
 
 def get_datetime_string_now() :
     now = datetime.datetime.now()
